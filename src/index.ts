@@ -23,7 +23,7 @@ const createWindow = () => {
     },
     icon: path.join(__dirname, '../assets/icons/win/app_icon.ico')
   });
-  window.loadURL('http://vatlines.com/vatlines');
+  window.loadURL('https://vatlines.com/vatlines');
 };
 
 app.whenReady().then(() => {
@@ -39,7 +39,6 @@ app.on('window-all-closed', () => {
 });
 
 ipcMain.handle('setPtt', (_, key: string) => {
-  console.log('args', typeof key, ':', key);
   pttKey = key.split('+');
   console.log(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
   keybinding.setPttKeys(pttKey.map(k => WinGlobalKeyLookup[k].keycode));

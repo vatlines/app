@@ -4,6 +4,7 @@
             "target_name": "keybind",
             "sources": ["keybind.cc"],
             "defines": ["NAPI_CPP_EXCEPTIONS"],
+            "win_delay_load_hook": "true"
         }
     ],
     "dependencies": [

@@ -1,13 +1,13 @@
 {
   "name": "vatlines-app",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "VATLines application with global hotkey support.",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node-gyp build && tsc && electron-forge start",
-    "build": "tsc",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "start": "npm run build && electron-forge start",
+    "build": "node-gyp build && npx electron-rebuild &&  tsc",
+    "make:portable": "npm run build && electron-forge package",
+    "make:installer": "npm run build && electron-forge make"
   },
   "keywords": [],
   "author": "VATLines",
@@ -22,6 +22,7 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
     "@electron-forge/plugin-fuses": "^7.4.0",
     "@electron/fuses": "^1.8.0",
+    "@electron/rebuild": "^3.6.0",
     "@types/keyboardjs": "^2.5.3",
     "electron": "^29.1.6",
     "eslint": "^8.57.0",
