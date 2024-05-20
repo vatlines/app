@@ -1,6 +1,6 @@
 {
   "name": "vatlines-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "VATLines application with global hotkey support.",
   "main": "dist/index.js",
   "scripts": {
