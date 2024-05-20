@@ -4,8 +4,10 @@
   "description": "VATLines application with global hotkey support.",
   "main": "dist/index.js",
   "scripts": {
-    "start": "npm run build && electron-forge start",
-    "build": "node-gyp build && npx electron-rebuild &&  tsc",
+    "tsc": "tsc && cp ./src/*.html dist",
+    "dev": "npm run build && electron-forge start",
+    "start": "npm run tsc && electron-forge start",
+    "build": "node-gyp build --silent && npx electron-rebuild && npm run tsc",
     "make:portable": "npm run build && electron-forge package",
     "make:installer": "npm run build && electron-forge make"
   },
