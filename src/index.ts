@@ -16,14 +16,47 @@ const createWindow = () => {
     maximizable: false,
     resizable: false,
     fullscreenable: false,
-    kiosk: true,
     autoHideMenuBar: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'main_preload.js')
     },
     icon: path.join(__dirname, '../assets/icons/win/app_icon.ico')
   });
   window.loadURL('https://vatlines.com/vatlines');
+  window.webContents.setWebRTCIPHandlingPolicy('default_public_interface_only');
+
+  // Check if first run
+  window.webContents
+    .executeJavaScript('localStorage.getItem("pttKey")')
+    .then(data => {
+      if (!data) {
+        createPopupWindow();
+      }
+    });
+};
+
+const createPopupWindow = () => {
+  const win = new BrowserWindow({
+    width: 868,
+    height: 651,
+    fullscreenable: false,
+    frame: false,
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: path.join(__dirname, 'popup_preload.js'),
+      devTools: false
+    },
+    icon: path.join(__dirname, '../assets/icons/win/app_icon.ico')
+  });
+  win.loadFile(path.join(__dirname, 'popup.html'));
+
+  ipcMain.handle('doContinue', () => {
+    win.destroy();
+  });
+
+  ipcMain.handle('doQuit', () => {
+    app.quit();
+  });
 };
 
 app.whenReady().then(() => {
@@ -39,6 +72,7 @@ app.on('window-all-closed', () => {
 });
 
 ipcMain.handle('setPtt', (_, key: string) => {
+  if (!key) return;
   pttKey = key.split('+');
   console.log(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
   keybinding.setPttKeys(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
