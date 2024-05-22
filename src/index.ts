@@ -70,17 +70,17 @@ ipcMain.handle('setPtt', (_, key: string) => {
 
 function pttCallback(data: any) {
   const targetWindow = BrowserWindow.getAllWindows()[0];
+  if (!targetWindow || targetWindow.id < 1) {
+    console.error('no target window for ptt callback');
+    return;
+  }
+
   if (data === 'PTT_DOWN') {
     console.debug('ptt is down');
-    if (targetWindow.id >= 0) {
-      BrowserWindow.getAllWindows()[0];
-      targetWindow.webContents.send('ptt-down');
-    }
+    targetWindow.webContents.send('ptt-down');
   } else if (data === 'PTT_UP') {
     console.debug('ptt is up');
-    if (targetWindow.id >= 0) {
-      targetWindow.webContents.send('ptt-up');
-    }
+    targetWindow.webContents.send('ptt-up');
   } else {
     console.error('Unknown c++ data', data);
   }
