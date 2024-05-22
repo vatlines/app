@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
-const keybinding = require('../build/Release/keybind');
+
+const keybinding = require('../build/Release/keybind'); // eslint-disable-line
 
 if (require('electron-squirrel-startup')) app.quit();
 
@@ -63,12 +64,12 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('setPtt', (_, key: string) => {
   if (!key) return;
-  let pttKey = key.split('+');
+  const pttKey = key.split('+');
   console.debug(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
   keybinding.setPttKeys(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
 });
 
-function pttCallback(data: any) {
+function pttCallback(data: string) {
   const targetWindow = BrowserWindow.getAllWindows()[0];
   if (!targetWindow || targetWindow.id < 1) {
     console.error('no target window for ptt callback');

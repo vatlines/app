@@ -9,7 +9,9 @@
     "start": "npm run tsc && electron-forge start",
     "build": "node-gyp build --silent && npx electron-rebuild && npm run tsc",
     "make:portable": "npm run build && electron-forge package",
-    "make:installer": "npm run build && electron-forge make"
+    "make:installer": "npm run build && electron-forge make",
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "format": "prettier --write \"**/*.ts\""
   },
   "keywords": [],
   "author": "VATLines",
@@ -26,6 +28,7 @@
     "@electron/fuses": "^1.8.0",
     "@electron/rebuild": "^3.6.0",
     "@types/keyboardjs": "^2.5.3",
+    "@typescript-eslint/eslint-plugin": "^7.10.0",
     "electron": "^29.1.6",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
