@@ -7,6 +7,7 @@
     "tsc": "tsc && cp ./src/*.html dist",
     "dev": "npm run build && electron-forge start",
     "start": "npm run tsc && electron-forge start",
+    "prebuild": "rm -rf out && rm -rf dist && rm -rf build && node-gyp rebuild --silent",
     "build": "node-gyp build --silent && npx electron-rebuild && npm run tsc",
     "make:portable": "npm run build && electron-forge package",
     "make:installer": "npm run build && electron-forge make",
