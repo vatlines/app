@@ -4,8 +4,6 @@ const keybinding = require('../build/Release/keybind');
 
 if (require('electron-squirrel-startup')) app.quit();
 
-let pttKey = [];
-
 const createWindow = () => {
   // Start listening for keybinds
   keybinding.startListening(pttCallback, [0x40]);
@@ -65,7 +63,7 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('setPtt', (_, key: string) => {
   if (!key) return;
-  pttKey = key.split('+');
+  let pttKey = key.split('+');
   console.debug(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
   keybinding.setPttKeys(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
 });
