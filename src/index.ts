@@ -4,13 +4,13 @@ const keybinding = require('../build/Release/keybind');
 
 if (require('electron-squirrel-startup')) app.quit();
 
-keybinding.startListening(pttCallback, [0x40]);
-
 let pttKey = [];
-let window: BrowserWindow = null;
 
 const createWindow = () => {
-  window = new BrowserWindow({
+  // Start listening for keybinds
+  keybinding.startListening(pttCallback, [0x40]);
+
+  const window = new BrowserWindow({
     width: 806,
     height: 629,
     maximizable: false,
@@ -22,7 +22,6 @@ const createWindow = () => {
     },
     icon: path.join(__dirname, '../assets/icons/win/app_icon.ico')
   });
-  window.loadURL('https://vatlines.com/vatlines');
   window.webContents.setWebRTCIPHandlingPolicy('default_public_interface_only');
   window.loadURL('https://vatlines.com/vatlines');
 };
@@ -67,20 +66,22 @@ app.on('window-all-closed', () => {
 ipcMain.handle('setPtt', (_, key: string) => {
   if (!key) return;
   pttKey = key.split('+');
-  console.log(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
+  console.debug(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
   keybinding.setPttKeys(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
 });
 
 function pttCallback(data: any) {
+  const targetWindow = BrowserWindow.getAllWindows()[0];
   if (data === 'PTT_DOWN') {
     console.debug('ptt is down');
-    if (window) {
-      window.webContents.send('ptt-down');
+    if (targetWindow.id >= 0) {
+      BrowserWindow.getAllWindows()[0];
+      targetWindow.webContents.send('ptt-down');
     }
   } else if (data === 'PTT_UP') {
     console.debug('ptt is up');
-    if (window) {
-      window.webContents.send('ptt-up');
+    if (targetWindow.id >= 0) {
+      targetWindow.webContents.send('ptt-up');
     }
   } else {
     console.error('Unknown c++ data', data);
