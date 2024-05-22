@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firewall access required.</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-neutral-800 text-white select-none px-3">
+    <div class="text-center grid h-screen place-items-center">
+      <div>
+        <p class="bold text-7xl">Firewall access required</p>
+        <p class="bold text-xl mt-7">
+          This VATLines application is an embedded Chromium browser pointed to
+          <a href="https://vatlines.com/vatlines" class="underline"
+            >vatlines.com/vatlines</a
+          >
+          to render the radio panel. VATLines can run completely in a browser,
+          only requiring microphone permissions (no PTT). This application
+          requires access through the Windows Firewall in order to facilitate
+          voice communication between yourself and our server, connecting you
+          with others. This application
+          <span class="font-semibold">does not send</span> any information about
+          your computer to us.
+        </p>
+        <p>
+          The source code for this application is available on
+          <a href="https://github.com/vatlines/app" class="underline">GitHub</a
+          >. Our privacy policy is available on
+          <a href="https://vatlines.com/terms" class="underline">vatlines.com</a
+          >.
+        </p>
+      </div>
+      <div class="grid grid-cols-2 gap-x-5">
+        <div
+          class="p-5 text-lg bg-red-700 rounded-3xl cursor-pointer"
+          id="quit"
+        >
+          Quit
+        </div>
+        <div
+          class="p-5 text-lg bg-green-700 rounded-3xl cursor-pointer"
+          id="continue"
+        >
+          Continue
+        </div>
+      </div>
+    </div>
+    <script>
+      if (localStorage.getItem('accepted')) {
+        console.debug('already accepted. continuing');
+        window.electron?.doContinue();
+      }
+      document.getElementById('continue').addEventListener('click', e => {
+        localStorage.setItem('accepted', 'true');
+        console.debug('doing continue');
+        window.electron?.doContinue();
+      });
+      document.getElementById('quit').addEventListener('click', e => {
+        localStorage.removeItem('accepted');
+        console.debug('force quitting');
+        window.electron?.doQuit();
+      });
+    </script>
+  </body>
+</html>
