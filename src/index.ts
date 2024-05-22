@@ -24,15 +24,7 @@ const createWindow = () => {
   });
   window.loadURL('https://vatlines.com/vatlines');
   window.webContents.setWebRTCIPHandlingPolicy('default_public_interface_only');
-
-  // Check if first run
-  window.webContents
-    .executeJavaScript('localStorage.getItem("pttKey")')
-    .then(data => {
-      if (!data) {
-        createPopupWindow();
-      }
-    });
+  window.loadURL('https://vatlines.com/vatlines');
 };
 
 const createPopupWindow = () => {
@@ -51,6 +43,7 @@ const createPopupWindow = () => {
   win.loadFile(path.join(__dirname, 'popup.html'));
 
   ipcMain.handle('doContinue', () => {
+    createWindow();
     win.destroy();
   });
 
@@ -60,10 +53,10 @@ const createPopupWindow = () => {
 };
 
 app.whenReady().then(() => {
-  createWindow();
+  createPopupWindow();
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) createPopupWindow();
   });
 });
 

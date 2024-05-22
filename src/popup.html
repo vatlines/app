@@ -47,19 +47,19 @@
       </div>
     </div>
     <script>
-      console.log('here1');
-      console.log(window.electron);
+      if (localStorage.getItem('accepted')) {
+        console.debug('already accepted. continuing');
+        window.electron?.doContinue();
+      }
       document.getElementById('continue').addEventListener('click', e => {
-        if (window.electron) {
-          console.log('doing continue');
-          window.electron.doContinue();
-        }
+        localStorage.setItem('accepted', 'true');
+        console.debug('doing continue');
+        window.electron?.doContinue();
       });
       document.getElementById('quit').addEventListener('click', e => {
-        if (window.electron) {
-          console.log('force quitting');
-          window.electron.doQuit();
-        }
+        localStorage.removeItem('accepted');
+        console.debug('force quitting');
+        window.electron?.doQuit();
       });
     </script>
   </body>
