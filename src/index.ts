@@ -1,16 +1,15 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
-const keybinding = require('../build/Release/keybind');
+
+const keybinding = require('../build/Release/keybind'); // eslint-disable-line
 
 if (require('electron-squirrel-startup')) app.quit();
 
-keybinding.startListening(pttCallback, [0x40]);
-
-let pttKey = [];
-let window: BrowserWindow = null;
-
 const createWindow = () => {
-  window = new BrowserWindow({
+  // Start listening for keybinds
+  keybinding.startListening(pttCallback, [0x40]);
+
+  const window = new BrowserWindow({
     width: 806,
     height: 629,
     maximizable: false,
@@ -22,17 +21,8 @@ const createWindow = () => {
     },
     icon: path.join(__dirname, '../assets/icons/win/app_icon.ico')
   });
-  window.loadURL('https://vatlines.com/vatlines');
   window.webContents.setWebRTCIPHandlingPolicy('default_public_interface_only');
-
-  // Check if first run
-  window.webContents
-    .executeJavaScript('localStorage.getItem("pttKey")')
-    .then(data => {
-      if (!data) {
-        createPopupWindow();
-      }
-    });
+  window.loadURL('https://vatlines.com/vatlines');
 };
 
 const createPopupWindow = () => {
@@ -51,6 +41,7 @@ const createPopupWindow = () => {
   win.loadFile(path.join(__dirname, 'popup.html'));
 
   ipcMain.handle('doContinue', () => {
+    createWindow();
     win.destroy();
   });
 
@@ -60,10 +51,10 @@ const createPopupWindow = () => {
 };
 
 app.whenReady().then(() => {
-  createWindow();
+  createPopupWindow();
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) createPopupWindow();
   });
 });
 
@@ -73,22 +64,24 @@ app.on('window-all-closed', () => {
 
 ipcMain.handle('setPtt', (_, key: string) => {
   if (!key) return;
-  pttKey = key.split('+');
-  console.log(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
+  const pttKey = key.split('+');
+  console.debug(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
   keybinding.setPttKeys(pttKey.map(k => WinGlobalKeyLookup[k].keycode));
 });
 
-function pttCallback(data: any) {
+function pttCallback(data: string) {
+  const targetWindow = BrowserWindow.getAllWindows()[0];
+  if (!targetWindow || targetWindow.id < 1) {
+    console.error('no target window for ptt callback');
+    return;
+  }
+
   if (data === 'PTT_DOWN') {
     console.debug('ptt is down');
-    if (window) {
-      window.webContents.send('ptt-down');
-    }
+    targetWindow.webContents.send('ptt-down');
   } else if (data === 'PTT_UP') {
     console.debug('ptt is up');
-    if (window) {
-      window.webContents.send('ptt-up');
-    }
+    targetWindow.webContents.send('ptt-up');
   } else {
     console.error('Unknown c++ data', data);
   }
