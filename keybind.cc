@@ -16,6 +16,9 @@ std::vector<int32_t> ptt_keys;
 std::mutex dataMutex;
 bool sentUpdate = false;
 
+std::thread listenerThread;
+std::atomic<bool> stopThread(false);
+
 bool isKeyDown(int keyCode)
 {
 #ifdef _WIN32
@@ -46,7 +49,7 @@ void keyboardInputListener(const Napi::Env &env)
 {
     std::unordered_set<int> heldKeys;
 
-    while (true)
+    while (!stopThread)
     {
         {
             heldKeys.clear();
@@ -99,6 +102,12 @@ Napi::Value StartListening(const Napi::CallbackInfo &info)
 {
     Napi::Env env = info.Env();
 
+    stopThread = true;
+    if (listenerThread.joinable())
+    {
+        listenerThread.join();
+    }
+
     tsfn = Napi::ThreadSafeFunction::New(
         env,
         info[0].As<Napi::Function>(), // JavaScript callback
@@ -107,7 +116,8 @@ Napi::Value StartListening(const Napi::CallbackInfo &info)
         1  // Only one thread will use this
     );
 
-    std::thread listenerThread(keyboardInputListener, env);
+    stopThread = false;
+    listenerThread = std::thread(keyboardInputListener, env);
     listenerThread.detach();
 
     return env.Undefined();
