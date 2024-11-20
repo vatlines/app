@@ -72,5 +72,6 @@
         }
       ]
     }
-  }
+  },
+  "packageManager": "npm@9.7.2"
 }

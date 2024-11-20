@@ -10,8 +10,8 @@ const createWindow = () => {
   keybinding.startListening(pttCallback, [0x40]);
 
   const window = new BrowserWindow({
-    width: 806,
-    height: 629,
+    width: 816,
+    height: 670,
     maximizable: false,
     resizable: false,
     fullscreenable: false,
@@ -27,8 +27,8 @@ const createWindow = () => {
 
 const createPopupWindow = () => {
   const win = new BrowserWindow({
-    width: 868,
-    height: 651,
+    width: 870,
+    height: 650,
     fullscreenable: false,
     frame: false,
     autoHideMenuBar: true,
